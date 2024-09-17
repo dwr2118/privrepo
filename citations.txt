@@ -1,0 +1,14 @@
+I got a refresher on all of the assertions that are possible with jUnit 
+like assertEquals, assertTrue and much more from their official javadoc found here:
+https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html.
+
+To help with cleanup and initializations of my unit tests, I had to learn
+the different annotation interfaces supported by jUnit like BeforeAll and 
+AfterAll; cited from their official javadoc: 
+https://javadoc.io/doc/org.junit.jupiter/junit-jupiter-api/latest/org/junit/jupiter/api/package-summary.html.
+
+To learn more about the Locale bug I was coming across,
+I read more about the functionality in this article: 
+https://beginnersbook.com/2013/12/java-string-tolowercase-method-example/ and 
+then referred to the official javadoc here: https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html
+for the implementation.
