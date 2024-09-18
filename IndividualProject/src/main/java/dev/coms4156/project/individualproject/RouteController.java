@@ -3,6 +3,7 @@ package dev.coms4156.project.individualproject;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -128,7 +129,8 @@ public class RouteController {
     
     try {
       ResponseEntity<?> retrievedCourseResponse = retrieveCourse(deptCode, courseCode);
-      Integer retrieveCourseStatus = retrievedCourseResponse.getStatusCodeValue();
+      HttpStatusCode retrieveRequestStatus= retrievedCourseResponse.getStatusCode();
+      Integer retrieveCourseStatus = retrieveRequestStatus.value();
       
       if (retrieveCourseStatus == 200) {
         Map<String, Department> departmentMapping;
