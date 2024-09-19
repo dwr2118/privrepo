@@ -3,7 +3,6 @@ package dev.coms4156.project.individualproject;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +56,58 @@ public class RouteController {
             HttpStatus.OK);
       } else {
         return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
+      }
+      
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
+  /**
+   * Returns the Spring representation of all the courses with the specific
+   * course code.
+   *
+   * @param courseCode A {@code Integer} representing the course code the user 
+   *     is looking for. 
+   * @return A String representing all of the courses with the specific course code.
+   */
+  @GetMapping(value = "/retrieveCourses", 
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> retrieveCourses(
+      @RequestParam("courseCode") Integer courseCode) {
+    
+    String retrievedCourses = "";
+    Integer courseNotFoundCount = 0;
+  
+    try {
+      Map<String, Department> departmentMapping;
+      departmentMapping = 
+          IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+
+      // Search through all of the departments first 
+      for (Map.Entry<String, Department> departments : departmentMapping.entrySet()) {
+        Map<String, Course> coursesMapping;
+        coursesMapping =
+            departmentMapping.get(departments.getKey()).getCourseSelection();
+        
+        // check if the course code is in the department
+        if (coursesMapping.containsKey(Integer.toString(courseCode))) {
+          String courseDetails = coursesMapping.get(Integer.toString(courseCode)).toString();
+          retrievedCourses += "\n\n" + departments.getKey() + ":" + courseDetails;
+        } else {
+          retrievedCourses += "\n\n" + departments.getKey() 
+              + ": Course code not found in this department.";
+          courseNotFoundCount++;
+        }
+      }
+      // format the string we are going to return 
+      String coursesRetrieved = "Here are all of the courses with course code: " 
+          + courseCode + retrievedCourses;
+      
+      if (courseNotFoundCount == departmentMapping.size()) {
+        return new ResponseEntity<>(coursesRetrieved, HttpStatus.NOT_FOUND);
+      } else {
+        return new ResponseEntity<>(coursesRetrieved, HttpStatus.OK);
       }
       
     } catch (Exception e) {
@@ -129,8 +180,7 @@ public class RouteController {
     
     try {
       ResponseEntity<?> retrievedCourseResponse = retrieveCourse(deptCode, courseCode);
-      HttpStatusCode retrieveRequestStatus= retrievedCourseResponse.getStatusCode();
-      Integer retrieveCourseStatus = retrieveRequestStatus.value();
+      Integer retrieveCourseStatus = retrievedCourseResponse.getStatusCode().value();
       
       if (retrieveCourseStatus == 200) {
         Map<String, Department> departmentMapping;
@@ -629,7 +679,6 @@ public class RouteController {
   }
   
   private ResponseEntity<?> handleException(Exception e) {
-    System.out.println("An exception has occurred: " + e.toString());
     return new ResponseEntity<>("An Error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
   }
   

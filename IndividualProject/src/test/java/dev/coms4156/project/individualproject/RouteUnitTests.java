@@ -516,6 +516,64 @@ public class RouteUnitTests {
 
     assertEquals(expectedResult, responseString);
   }
+
+  /**
+   * Testing to ensure we can retrieve multiple instance of a valid 
+   * course code from our database. 
+   */
+  @Test
+  public void getInstancesOfValidCourseCode() {
+    String expectedResult = "Here are all of the courses with course code: 1001\n" + //
+        "\n" + //
+        "ELEN: Course code not found in this department.\n" + //
+        "\n" + //
+        "CHEM: Course code not found in this department.\n" + //
+        "\n" + //
+        "PHYS:\n" + //
+        "Instructor: Szabolcs Marka; Location: 301 PUP; Time: 2:40-3:55\n" + //
+        "\n" + //
+        "PSYC:\n" + //
+        "Instructor: Patricia G Lindemann; Location: 501 SCH; Time: 1:10-2:25\n" + //
+        "\n" + //
+        "COMS: Course code not found in this department.\n" + //
+        "\n" + //
+        "ECON: Course code not found in this department.\n" + //
+        "\n" + //
+        "IEOR: Course code not found in this department. 200 OK";
+    ResponseEntity<?> response = testRouteController.retrieveCourses(1001);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can retrieve multiple instance of an invalid 
+   * course code from our database. 
+   */
+  @Test
+  public void getInstancesOfInvalidCourseCode() {
+    String expectedResult = "Here are all of the courses with course code: 1000\n" + //
+        "\n" + //
+        "ELEN: Course code not found in this department.\n" + //
+        "\n" + //
+        "CHEM: Course code not found in this department.\n" + //
+        "\n" + //
+        "PHYS: Course code not found in this department.\n" + //
+        "\n" + //
+        "PSYC: Course code not found in this department.\n" + //
+        "\n" + //
+        "COMS: Course code not found in this department.\n" + //
+        "\n" + //
+        "ECON: Course code not found in this department.\n" + //
+        "\n" + //
+        "IEOR: Course code not found in this department. 404 NOT_FOUND";
+    ResponseEntity<?> response = testRouteController.retrieveCourses(1000);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
   
   /**
    * The test department instance used for testing and the courses held within the Department.
