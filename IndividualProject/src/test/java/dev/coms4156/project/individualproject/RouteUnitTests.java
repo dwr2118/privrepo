@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +86,7 @@ public class RouteUnitTests {
    */
   @Test
   public void retrieveDepartmentInvalidInputTest() {
-    String expectedResult = "An Error has occurred";
+    String expectedResult = "An error has occurred";
     ResponseEntity<?> response = testRouteController.retrieveDepartment(null);
     assertEquals(expectedResult, response.getBody());
   }
@@ -132,7 +133,7 @@ public class RouteUnitTests {
    */
   @Test
   public void retrieveCourseInvalidInputTest() {
-    String expectedResult = "An Error has occurred";
+    String expectedResult = "An error has occurred";
     ResponseEntity<?> response = testRouteController.retrieveCourse("COMS", null);
     assertEquals(expectedResult, response.getBody());
   }
@@ -167,7 +168,7 @@ public class RouteUnitTests {
    */
   @Test
   public void isCourseFullInvalidInputTest() {
-    String expectedResult = "An Error has occurred 500 INTERNAL_SERVER_ERROR";
+    String expectedResult = "An error has occurred 500 INTERNAL_SERVER_ERROR";
     ResponseEntity<?> response = testRouteController.isCourseFull("COMS", null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
@@ -509,12 +510,142 @@ public class RouteUnitTests {
    */
   @Test
   public void handleExceptionTesting() {
-    String expectedResult = "An Error has occurred 500 INTERNAL_SERVER_ERROR";
+    String expectedResult = "An error has occurred 500 INTERNAL_SERVER_ERROR";
     ResponseEntity<?> response = testRouteController.isCourseFull("COMS", null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
 
     assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can retrieve multiple instance of a valid 
+   * course code from our database. 
+   */
+  @Test
+  public void retrieveValidCourseCode() {
+    String expectedResult = "Here are all of the courses with course code: 1001\n\n" 
+        + "ELEN: Course code not found in this department.\n\n" 
+        + "CHEM: Course code not found in this department.\n\n" 
+        + "PHYS:\n" + "Instructor: Szabolcs Marka; Location: 301 PUP; Time: 2:40-3:55\n\n" 
+        + "PSYC:\n" + "Instructor: Patricia G Lindemann; Location: 501 SCH; Time: 1:10-2:25\n\n" 
+        + "COMS: Course code not found in this department.\n\n" 
+        + "ECON: Course code not found in this department.\n\n" 
+        + "IEOR: Course code not found in this department. 200 OK";
+    ResponseEntity<?> response = testRouteController.retrieveCourses(1001);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can retrieve multiple instance of an invalid 
+   * course code from our database. 
+   */
+  @Test
+  public void retrieveInvalidCourseCode() {
+    String expectedResult = "Here are all of the courses with course code: 1000\n\n" 
+        + "ELEN: Course code not found in this department.\n\n" 
+        + "CHEM: Course code not found in this department.\n\n" 
+        + "PHYS: Course code not found in this department.\n\n" 
+        + "PSYC: Course code not found in this department.\n\n" 
+        + "COMS: Course code not found in this department.\n\n" 
+        + "ECON: Course code not found in this department.\n\n" 
+        + "IEOR: Course code not found in this department. 404 NOT_FOUND";
+    ResponseEntity<?> response = testRouteController.retrieveCourses(1000);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we get an appropriate response if we pass null into 
+   * the course code parameter. 
+   */
+  @Test
+  public void retrieveInvalidInputCourse() {
+    String expectedResult = "An error has occurred 500 INTERNAL_SERVER_ERROR";
+    ResponseEntity<?> response = testRouteController.retrieveCourses(null);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can enroll a student in an open course. 
+   */
+  @Test
+  public void enrollStudentInValidCourse() {
+    String expectedResult = "Student has been enrolled in the course. 200 OK";
+    ResponseEntity<?> response = testRouteController.enrollStudentInCourse("COMS", 1004);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can cannot enroll a student in a course that is full.
+   */
+  @Test
+  public void enrollStudentInFullCourse() {
+    String expectedResult = "Course is full; unable to enroll student. 403 FORBIDDEN";
+    ResponseEntity<?> filledCourse = 
+        testRouteController.setEnrollmentCount("COMS", 4156, 120);
+    assertEquals(filledCourse.getStatusCode(), HttpStatus.OK);
+
+    ResponseEntity<?> response = testRouteController.enrollStudentInCourse("COMS", 4156);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can cannot enroll a student in a course that is nonexistent. 
+   */
+  @Test
+  public void enrollStudentInInvalidCourse() {
+    String expectedResult = "Course Not Found 404 NOT_FOUND";
+    ResponseEntity<?> response = testRouteController.enrollStudentInCourse("COMS", 3265);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can cannot enroll a student in a department that doesn't exist.
+   */
+  @Test
+  public void enrollStudentInInvalidDept() {
+    String expectedResult = "Department Not Found 404 NOT_FOUND";
+    ResponseEntity<?> response = testRouteController.enrollStudentInCourse("PHIL", 3265);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to ensure we can handle errors gracefully.
+   */
+  @Test
+  public void enrollStudentInInvalidInput() {
+    String expectedResult = "An error has occurred 500 INTERNAL_SERVER_ERROR";
+    ResponseEntity<?> responseDept = testRouteController.enrollStudentInCourse(null, 3265);
+    HttpStatusCode responseStatusDept = responseDept.getStatusCode();
+    String responseStringDept = responseDept.getBody() + " " + responseStatusDept.toString();
+
+    ResponseEntity<?> responseCourse = testRouteController.enrollStudentInCourse("COMS", null);
+    HttpStatusCode responseStatusCourse = responseDept.getStatusCode();
+    String responseStringCourse = responseCourse.getBody() + " " + responseStatusCourse.toString();
+
+    assertEquals(expectedResult, responseStringDept);
+    assertEquals(expectedResult, responseStringCourse);
   }
   
   /**
