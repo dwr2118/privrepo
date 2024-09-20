@@ -642,6 +642,10 @@ public class RouteController {
       @RequestParam("deptCode") String deptCode,
       @RequestParam("courseCode") Integer courseCode,
       @RequestParam("time") String time) {
+
+    if (time == null || time.isEmpty()) {
+      return new ResponseEntity<>("Time cannot be empty", HttpStatus.FORBIDDEN);
+    }
     
     try {
       boolean doesCourseExists;
@@ -733,6 +737,10 @@ public class RouteController {
       @RequestParam("deptCode") String deptCode,
       @RequestParam("courseCode") Integer courseCode,
       @RequestParam("location") String location) {
+    
+    if (location == null || location.isEmpty() || location.isBlank()) {
+      return new ResponseEntity<>("Location cannot be empty.", HttpStatus.FORBIDDEN);
+    }
     try {
       boolean doesCourseExists;
       doesCourseExists =
