@@ -12,3 +12,11 @@ I read more about the functionality in this article:
 https://beginnersbook.com/2013/12/java-string-tolowercase-method-example/ and 
 then referred to the official javadoc here: https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html
 for the implementation.
+
+I utilized the lecture materials located in this file:
+https://docs.google.com/presentation/d/1_lnasYt5MviTXMk9AVi7K6UJGFhkSL_p52yB4O3b98g/edit#slide=id.g2908ed65fea_0_213
+to learn more about GitHub Actions and how to make my own simple workflows
+for the current state of my miniproject. Initially, I was confused as to why 
+I was getting an error from the runner stating that the POM file couldn't be located
+but then I remembered we have to explicitly change its directory to the one 
+that stores pom.xml. Afterwards, we can have it run mvn test B)  
