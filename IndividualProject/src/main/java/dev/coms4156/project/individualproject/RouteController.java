@@ -119,70 +119,7 @@ public class RouteController {
     }
   }
 
-  /**
-   * Returns the Spring representation of all the courses with the specific
-   * course code. If the course code is not found within any departments,
-   * the response will be an HTTP 404 NOT_FOUND.
-   *
-   * @param courseCode A {@code Integer} representing the course code the user 
-   *     is looking for. 
-   * @param deptCode A {@code String} representing the department the user is
-   *     is looking to enroll a student into.  
-   * @return A {@code ResponseEntity} object containing either the details of
-   *     the sucessful modification and an HTTP 200 response, HTTP 404 response 
-   *     if the course and/or department couldn't be found or an appropriate message
-   *     indicating the proper response.
-   */
-  @GetMapping(value = "/enrollStudentInCourse", 
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> enrollStudentInCourse(
-      @RequestParam("deptCode") String deptCode,
-      @RequestParam("courseCode") Integer courseCode) {
 
-    try {
-      String localeDeptCode = deptCode.toUpperCase(Locale.ROOT);
-
-      boolean doesDepartmentExists =
-          retrieveDepartment(localeDeptCode).getStatusCode() == HttpStatus.OK;
-      if (doesDepartmentExists) {
-        Map<String, Department> departmentMapping;
-        departmentMapping =
-            IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-        Map<String, Course> coursesMapping;
-        coursesMapping =
-            departmentMapping.get(localeDeptCode).getCourseSelection();
-        
-        boolean doesCourseExists = 
-            coursesMapping.containsKey(Integer.toString(courseCode));
-
-        Course requestedCourse = coursesMapping.get(Integer.toString(courseCode));
-        
-        // if the course exists and is full, do not enroll the student 
-        if (doesCourseExists && requestedCourse.isCourseFull()) {
-
-          return new ResponseEntity<>("Course is full; unable to enroll student.", 
-                                      HttpStatus.FORBIDDEN);
-          
-          // if the course exists and has an open seat, enroll the student
-        } 
-        if (doesCourseExists && !requestedCourse.isCourseFull()) {
-          requestedCourse.enrollStudent();
-          return new ResponseEntity<>("Student has been enrolled in the course.", 
-                                      HttpStatus.OK);
-
-        } 
-        if (!doesCourseExists) {
-          return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
-        }
-        
-      }
-      return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
-
-    } catch (Exception e) {
-      return handleException(e);
-    }
-  }
-  
   /**
    * Displays the details of the requested course to the user or displays the proper error
    * message in response to the request.
@@ -464,6 +401,70 @@ public class RouteController {
       return handleException(e);
     }
   }
+
+  /**
+   * Returns the appropriate response given user attempted to enroll a student
+   * in the department and course code provided.
+   *
+   * @param courseCode A {@code Integer} representing the course code the user 
+   *     is looking for. 
+   * @param deptCode A {@code String} representing the department the user is
+   *     is looking to enroll a student into.  
+   * @return A {@code ResponseEntity} object containing either the details of
+   *     the sucessful modification and an HTTP 200 response, HTTP 404 response 
+   *     if the course and/or department couldn't be found or an appropriate message
+   *     indicating the proper response.
+   */
+  @PatchMapping(value = "/enrollStudentInCourse", 
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> enrollStudentInCourse(
+      @RequestParam("deptCode") String deptCode,
+      @RequestParam("courseCode") Integer courseCode) {
+
+    try {
+      String localeDeptCode = deptCode.toUpperCase(Locale.ROOT);
+
+      boolean doesDepartmentExists =
+          retrieveDepartment(localeDeptCode).getStatusCode() == HttpStatus.OK;
+      if (doesDepartmentExists) {
+        Map<String, Department> departmentMapping;
+        departmentMapping =
+            IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+        Map<String, Course> coursesMapping;
+        coursesMapping =
+            departmentMapping.get(localeDeptCode).getCourseSelection();
+        
+        boolean doesCourseExists = 
+            coursesMapping.containsKey(Integer.toString(courseCode));
+
+        Course requestedCourse = coursesMapping.get(Integer.toString(courseCode));
+        
+        // if the course exists and is full, do not enroll the student 
+        if (doesCourseExists && requestedCourse.isCourseFull()) {
+
+          return new ResponseEntity<>("Course is full; unable to enroll student.", 
+                                      HttpStatus.FORBIDDEN);
+          
+          // if the course exists and has an open seat, enroll the student
+        } 
+        if (doesCourseExists && !requestedCourse.isCourseFull()) {
+          requestedCourse.enrollStudent();
+          return new ResponseEntity<>("Student has been enrolled in the course.", 
+                                      HttpStatus.OK);
+
+        } 
+        if (!doesCourseExists) {
+          return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
+        }
+        
+      }
+      return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
+
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+  
   
   /**
    * Attempts to add a student to the specified department.
@@ -606,9 +607,16 @@ public class RouteController {
         
         Course requestedCourse =
             coursesMapping.get(Integer.toString(courseCode));
-        requestedCourse.setEnrolledStudentCount(count);
-        return new ResponseEntity<>("Attribute was updated successfully.",
-            HttpStatus.OK);
+
+        Boolean changedStudentCount = requestedCourse.setEnrolledStudentCount(count);
+        
+        if (changedStudentCount) {
+          return new ResponseEntity<>("Attribute was updated successfully.",
+              HttpStatus.OK);
+        } else {
+          return new ResponseEntity<>("Attribute was not updated successfully.",
+              HttpStatus.FORBIDDEN);
+        }
       } else {
         return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
       }
@@ -679,6 +687,11 @@ public class RouteController {
       @RequestParam("deptCode") String deptCode,
       @RequestParam("courseCode") Integer courseCode,
       @RequestParam("teacher") String teacher) {
+    
+    // check for invalid input 
+    if (teacher == null || teacher.isEmpty() || teacher.isBlank()) {
+      return new ResponseEntity<>("Teacher name cannot be empty.", HttpStatus.FORBIDDEN);
+    }
     try {
       boolean doesCourseExists;
       doesCourseExists =
@@ -747,6 +760,7 @@ public class RouteController {
   }
   
   private ResponseEntity<?> handleException(Exception e) {
+    e.printStackTrace();
     return new ResponseEntity<>("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
   }
   

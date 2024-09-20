@@ -65,7 +65,9 @@ public class Department implements Serializable {
    * Decreases the number of majors in the department by one if it's greater than zero.
    */
   public void dropPersonFromMajor() {
-    numberOfMajors--;
+    if (numberOfMajors > 0) {
+      numberOfMajors--;
+    } 
   }
   
   /**
@@ -87,12 +89,21 @@ public class Department implements Serializable {
    * @param courseTimeSlot The time slot of the course.
    * @param capacity       The maximum number of students that can enroll in the course.
    */
-  public void createCourse(String courseId, String instructorName,
+  public boolean createCourse(String courseId, String instructorName,
                            String courseLocation, String courseTimeSlot,
                            int capacity) {
-    Course newCourse =
-        new Course(instructorName, courseLocation, courseTimeSlot, capacity);
-    addCourse(courseId, newCourse);
+
+    // To ensure robustness, do not allow the creation of a new course 
+    // if the data is invalid.
+    if (courseId == null || instructorName == null || courseLocation == null
+        || courseTimeSlot == null || capacity <= 0) {
+      return false;
+    } else {
+      Course newCourse =
+          new Course(instructorName, courseLocation, courseTimeSlot, capacity);
+      addCourse(courseId, newCourse);
+      return true;
+    }
   }
   
   /**
