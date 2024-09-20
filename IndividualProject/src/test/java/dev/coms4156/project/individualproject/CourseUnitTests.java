@@ -44,8 +44,8 @@ public class CourseUnitTests {
    */
   @Test
   public void enrollStudentCloseTest() {
-    testCourse.setEnrolledStudentCount(500);
-    assertEquals(false, testCourse.enrollStudent());
+    Boolean successfulEnrollmentChange = testCourse.setEnrolledStudentCount(500);
+    assertEquals(false, successfulEnrollmentChange);
   }
   
   /**

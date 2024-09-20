@@ -53,7 +53,6 @@ public class RouteUnitTests {
         + " Postman to an endpoint "
         + "\n\n This can be done using the following format: \n\n http:127.0.0"
         + ".1:8080/endpoint?arg=value";
-
     assertEquals(expectedResult, testRouteController.index());
   }
 
@@ -397,7 +396,7 @@ public class RouteUnitTests {
     String responseString = response.getBody() + " " + responseStatus.toString();
 
     assertEquals(expectedResult, responseString);
-    testRouteController.setEnrollmentCount("COMS", 1004, 1000);
+    testRouteController.setEnrollmentCount("COMS", 1004, 250);
   }
 
   /**
@@ -406,7 +405,7 @@ public class RouteUnitTests {
   @Test
   public void setValidEnrollmentCountTest() {
     String expectedResult =  "Attribute was updated successfully. 200 OK";
-    ResponseEntity<?> response = testRouteController.setEnrollmentCount("COMS", 1004, 1000);
+    ResponseEntity<?> response = testRouteController.setEnrollmentCount("COMS", 1004, 100);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
 
@@ -473,6 +472,19 @@ public class RouteUnitTests {
   public void changeInvalidCourseTeacherTest() {
     String expectedResult =  "Course Not Found 404 NOT_FOUND";
     ResponseEntity<?> response = testRouteController.changeCourseTeacher("PSYC", 4995, "Darwin");
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to make sure we can change the instructor of an invalid course. 
+   */
+  @Test
+  public void changeCourseInvalidTeacherTest() {
+    String expectedResult =  "Teacher name cannot be empty. 403 FORBIDDEN";
+    ResponseEntity<?> response = testRouteController.changeCourseTeacher("COMS", 4156, null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
 
@@ -589,14 +601,21 @@ public class RouteUnitTests {
 
   /**
    * Testing to ensure we can cannot enroll a student in a course that is full.
+   * First try to change the enrollment count to be larger than class capacity. 
    */
   @Test
   public void enrollStudentInFullCourse() {
-    String expectedResult = "Course is full; unable to enroll student. 403 FORBIDDEN";
+    
     ResponseEntity<?> filledCourse = 
         testRouteController.setEnrollmentCount("COMS", 4156, 120);
-    assertEquals(filledCourse.getStatusCode(), HttpStatus.OK);
+    assertEquals(filledCourse.getStatusCode(), HttpStatus.FORBIDDEN);
+    filledCourse = 
+        testRouteController.setEnrollmentCount("COMS", 4156, 119);
 
+    assertEquals(filledCourse.getStatusCode(), HttpStatus.OK);
+    testRouteController.enrollStudentInCourse("COMS", 4156);
+
+    String expectedResult = "Course is full; unable to enroll student. 403 FORBIDDEN";
     ResponseEntity<?> response = testRouteController.enrollStudentInCourse("COMS", 4156);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
