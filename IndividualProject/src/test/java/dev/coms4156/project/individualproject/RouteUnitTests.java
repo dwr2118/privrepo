@@ -453,6 +453,19 @@ public class RouteUnitTests {
   }
 
   /**
+   * Testing to ensure we are not able to change the course time of an invalid course. 
+   */
+  @Test
+  public void changeInvalidInputTimeTest() {
+    String expectedResult =  "Time cannot be empty 403 FORBIDDEN";
+    ResponseEntity<?> response = testRouteController.changeCourseTime("ELEN", 4995, null);
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
    * Testing to make sure we can change the instructor of a valid course. 
    */
   @Test
@@ -511,6 +524,19 @@ public class RouteUnitTests {
   public void changeInvalidCourseLocationTest() {
     String expectedResult =  "Course Not Found 404 NOT_FOUND";
     ResponseEntity<?> response = testRouteController.changeCourseLocation("PSYC", 1004, "417 IAB");
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
+   * Testing to make sure we can change the course location of a valid course. 
+   */
+  @Test
+  public void changeInvalidInputLocationTest() {
+    String expectedResult =  "Location cannot be empty. 403 FORBIDDEN";
+    ResponseEntity<?> response = testRouteController.changeCourseLocation("PSYC", 1004, null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
 
