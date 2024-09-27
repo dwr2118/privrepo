@@ -50,8 +50,8 @@ The most recent output given to me by the PMD static bug analysis can be see bel
 ![image](https://github.com/user-attachments/assets/d856ffe4-5267-4602-8317-d956bb5289ad)
 
 
-## Continuous Integration Report
-This repository using GitHub Actions to perform continous integration and the configs for this workflow are located within the maven.yml file in <code>.github/workflows</code>. These will trigger whenever a new commit to main was conducted and/or there has been a pull request into main created. It just runs <code>mvn test</code> to essentially run the tests described above. Ideally, I would have the runner create a brand new instance of the server for testing but I haven't taken the time out to explore the configurations. 
+## Continuous Integration
+This repository using GitHub Actions to perform continuous integration and the configs for this workflow are located within the maven.yml file in <code>.github/workflows</code>. These will trigger whenever a new commit to main was conducted and/or there has been a pull request into main created. It just runs <code>mvn test</code> to essentially run the tests described above. Ideally, I would have the runner create a brand new instance of the server for testing but I haven't taken the time out to explore the configurations. 
 
 ## Tools used 🧰
 This section includes notes on tools and technologies used in building this project, as well as any additional details if applicable.
