@@ -643,7 +643,7 @@ public class RouteController {
       @RequestParam("courseCode") Integer courseCode,
       @RequestParam("time") String time) {
 
-    if (time == null || time.isEmpty()) {
+    if (time == null || time.isBlank()) {
       return new ResponseEntity<>("Time cannot be empty", HttpStatus.FORBIDDEN);
     }
     
@@ -693,7 +693,7 @@ public class RouteController {
       @RequestParam("teacher") String teacher) {
     
     // check for invalid input 
-    if (teacher == null || teacher.isEmpty() || teacher.isBlank()) {
+    if (teacher == null || teacher.isBlank()) {
       return new ResponseEntity<>("Teacher name cannot be empty.", HttpStatus.FORBIDDEN);
     }
     try {
@@ -738,7 +738,7 @@ public class RouteController {
       @RequestParam("courseCode") Integer courseCode,
       @RequestParam("location") String location) {
     
-    if (location == null || location.isEmpty() || location.isBlank()) {
+    if (location == null || location.isBlank()) {
       return new ResponseEntity<>("Location cannot be empty.", HttpStatus.FORBIDDEN);
     }
     try {

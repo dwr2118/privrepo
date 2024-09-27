@@ -461,7 +461,16 @@ public class RouteUnitTests {
     ResponseEntity<?> response = testRouteController.changeCourseTime("ELEN", 4995, null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
 
+    response = testRouteController.changeCourseTime("ELEN", 4995, "");
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
+
+    response = testRouteController.changeCourseTime("ELEN", 4995, "       ");
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
     assertEquals(expectedResult, responseString);
   }
 
@@ -505,6 +514,28 @@ public class RouteUnitTests {
   }
 
   /**
+   * Testing to make sure we can change the instructor of an invalid course. 
+   */
+  @Test
+  public void changeCourseEmptyTeacherTest() {
+    String expectedResult =  "Teacher name cannot be empty. 403 FORBIDDEN";
+    ResponseEntity<?> response = testRouteController.changeCourseTeacher("COMS", 4156, "");
+    HttpStatusCode responseStatus = response.getStatusCode();
+    String responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
+
+    response = testRouteController.changeCourseTeacher("COMS", 4156, null);
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
+
+    response = testRouteController.changeCourseTeacher("COMS", 4156, "      ");
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
+  }
+
+  /**
    * Testing to make sure we can change the course location of a valid course. 
    */
   @Test
@@ -539,7 +570,16 @@ public class RouteUnitTests {
     ResponseEntity<?> response = testRouteController.changeCourseLocation("PSYC", 1004, null);
     HttpStatusCode responseStatus = response.getStatusCode();
     String responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
 
+    response = testRouteController.changeCourseLocation("PSYC", 1004, "");
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
+    assertEquals(expectedResult, responseString);
+
+    response = testRouteController.changeCourseLocation("PSYC", 1004, "          ");
+    responseStatus = response.getStatusCode();
+    responseString = response.getBody() + " " + responseStatus.toString();
     assertEquals(expectedResult, responseString);
   }
 
@@ -616,7 +656,7 @@ public class RouteUnitTests {
    * Testing to ensure we can enroll a student in an open course. 
    */
   @Test
-  public void enrollStudentInValidCourse() {
+  public void enrollStudentValidCourse() {
     String expectedResult = "Student has been enrolled in the course. 200 OK";
     ResponseEntity<?> response = testRouteController.enrollStudentInCourse("COMS", 1004);
     HttpStatusCode responseStatus = response.getStatusCode();
@@ -633,7 +673,7 @@ public class RouteUnitTests {
   public void enrollStudentInFullCourse() {
     
     ResponseEntity<?> filledCourse = 
-        testRouteController.setEnrollmentCount("COMS", 4156, 120);
+        testRouteController.setEnrollmentCount("COMS", 4156, 121);
     assertEquals(filledCourse.getStatusCode(), HttpStatus.FORBIDDEN);
     filledCourse = 
         testRouteController.setEnrollmentCount("COMS", 4156, 119);

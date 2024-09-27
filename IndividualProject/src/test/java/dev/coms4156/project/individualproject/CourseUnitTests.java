@@ -27,6 +27,16 @@ public class CourseUnitTests {
         "\nInstructor: Griffin Newbold; Location: 417 IAB; Time: 11:40-12:55";
     assertEquals(expectedResult, testCourse.toString());
   }
+
+  /**
+   * This test is created to check if we can enroll students in a course
+   * that is full. 
+   */
+  @Test
+  public void enrollStudentInFullCourseTest() {
+    testCourse.setEnrolledStudentCount(250);
+    assertEquals(false, testCourse.enrollStudent());
+  }
   
   /**
    * The test course has a capacity of 250 so students can be enrolled with a 200 student head

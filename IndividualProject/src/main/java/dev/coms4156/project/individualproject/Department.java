@@ -57,17 +57,21 @@ public class Department implements Serializable {
   /**
    * Increases the number of majors in the department by one.
    */
-  public void addPersonToMajor() {
+  public boolean addPersonToMajor() {
     numberOfMajors++;
+    return true;
   }
   
   /**
    * Decreases the number of majors in the department by one if it's greater than zero.
    */
-  public void dropPersonFromMajor() {
+  public boolean dropPersonFromMajor() {
     if (numberOfMajors > 0) {
       numberOfMajors--;
-    } 
+      return true;
+    } else {
+      return false;
+    }
   }
   
   /**
@@ -96,7 +100,9 @@ public class Department implements Serializable {
     // To ensure robustness, do not allow the creation of a new course 
     // if the data is invalid.
     if (courseId == null || instructorName == null || courseLocation == null
-        || courseTimeSlot == null || capacity <= 0) {
+        || courseTimeSlot == null || capacity <= 0 || courseId.isEmpty()
+        || instructorName.isEmpty() || courseLocation.isEmpty()
+        || courseTimeSlot.isEmpty()) {
       return false;
     } else {
       Course newCourse =

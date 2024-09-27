@@ -97,7 +97,7 @@ public class Course implements Serializable {
    * @return true if the count is successfully set, false otherwise.
    */
   public boolean setEnrolledStudentCount(int count) {
-    if (count < enrollmentCapacity) {
+    if (count <= enrollmentCapacity) {
       this.enrolledStudentCount = count;
       return true;
     } else {
