@@ -3,7 +3,11 @@ This is the private GitHub repository for the individual miniproject associated 
 COMS 4156 Advanced Software Engineering. All work is individually by Diego Rivas
 Lazala (UNI: dwr2118).
 
-video: https://youtu.be/ukxdrQx_Pb0
+# Demo Video
+Below you'll get a glimpse into the main deliverable for I3 of this miniproject here: **https://youtu.be/ukxdrQx_Pb0**.
+It essentially shows the service launched on a Google Cloud App Engine instance and endpoint testing
+using Thunder Client from within VS Code. If there's any issues viewing the video, please let me know through email:
+dwr2118@columbia.edu. 
 
 ## Building and Running a Local Instance
 In order to build and use our service you must install the following (This guide assumes MacOS but the Maven README has instructions for both Windows and Mac):
@@ -22,9 +26,6 @@ ments="setup"</code> and then you can run the tests via the test files described
 7. If you'd like to run a static bug checker, you can use PMD and run this following command from **within the IndividualProject folder**
 to check for bugs without spinning up the service: <code> pmd check -d ./src -R rulesets/java/quickstart.xml -f text </code>. This command allows for the use of the quickstart ruleset within a MacOS environment. 
 
-<!-- Our endpoints are listed below in the "Endpoints" section, with brief descriptions of their parameters. For in-depth examples and system-level
-tests of them, see the section "Postman Test Documentation" below. -->
-
 ## Running Tests
 My unit tests are located under the directory 'src/test'. To run my project's tests, you'll need
 Test Runner for Java from the VS Code Marketplace. You'll then find a potion bottle somewhere on your VS Code
@@ -39,7 +40,127 @@ run test button after hovering over the test method you'd like to run.
 Below are all the descriptions of the endpoints that my service provides; including inputs & outputs. 
 If you make a crappy request, you'll automatically receive a HTTP 400 Bad Request sent by the server. 
 
-TODO: put all of the route controller methods/endpoints on here & describe their inputs & outputs 
+#### GET /, /index, /home
+* Redirects to the homepage.
+* Returns: A String containing the name of the html file to be loaded.
+
+#### GET /retrieveDepartment
+* Returns the details of the specified department.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to retrieve.
+* Returns: A ResponseEntity object containing either the details of the Department and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /retrieveCourses
+* Returns the Spring representation of all the courses with the specific course code. If the course code is not found within any departments, the response will be an HTTP 404 NOT_FOUND.
+* Parameters: 
+  - `courseCode`: An Integer representing the course code the user is looking for.
+* Returns: A ResponseEntity object containing either the details of the course code within each department and an HTTP 200 response, an HTTP 404 response if the course was not found in any department, or an appropriate message indicating the proper response.
+
+#### GET /retrieveCourse
+* Displays the details of the requested course to the user or displays the proper error message in response to the request.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the course in.
+  - `courseCode`: An Integer representing the course the user wishes to retrieve.
+* Returns: A ResponseEntity object containing either the details of the course and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /isCourseFull
+* Displays whether the course has at minimum reached its enrollment capacity.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the course in.
+  - `courseCode`: An Integer representing the course the user wishes to retrieve.
+* Returns: A ResponseEntity object containing either the requested information and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /getMajorCountFromDept
+* Displays the number of majors in the specified department.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the number of majors for.
+* Returns: A ResponseEntity object containing either the number of majors for the specified department and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /idDeptChair
+* Displays the department chair for the specified department.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the department chair of.
+* Returns: A ResponseEntity object containing either the department chair of the specified department and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /findCourseLocation
+* Displays the location for the specified course.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the course in.
+  - `courseCode`: An Integer representing the course the user wishes to find information about.
+* Returns: A ResponseEntity object containing either the location of the course and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /findCourseInstructor
+* Displays the instructor for the specified course.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the course in.
+  - `courseCode`: An Integer representing the course the user wishes to find information about.
+* Returns: A ResponseEntity object containing either the course instructor and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### GET /findCourseTime
+* Displays the time the course meets for the specified course.
+* Parameters: 
+  - `deptCode`: A String representing the department the user wishes to find the course in.
+  - `courseCode`: An Integer representing the course the user wishes to find information about.
+* Returns: A ResponseEntity object containing either the details of the course time slot and an HTTP 200 response or an appropriate message indicating the proper response.
+
+#### PATCH /enrollStudentInCourse
+* Returns the appropriate response given a user attempting to enroll a student in the department and course code provided.
+* Parameters: 
+  - `deptCode`: A String representing the department the user is looking to enroll a student into.
+  - `courseCode`: An Integer representing the course code the user is looking for.
+* Returns: A ResponseEntity object containing either the details of the successful modification and an HTTP 200 response, an HTTP 404 response if the course and/or department couldn't be found, or an appropriate message indicating the proper response.
+
+#### PATCH /addMajorToDept
+* Attempts to add a student to the specified department.
+* Parameters: 
+  - `deptCode`: A String representing the department.
+* Returns: A ResponseEntity object containing an HTTP 200 response with an appropriate message or the proper status code in tune with what has happened.
+
+#### PATCH /removeMajorFromDept
+* Attempts to remove a student from the specified department.
+* Parameters: 
+  - `deptCode`: A String representing the department.
+* Returns: A ResponseEntity object containing an HTTP 200 response with an appropriate message or the proper status code in tune with what has happened.
+
+#### PATCH /dropStudentFromCourse
+* Attempts to drop a student from the specified course.
+* Parameters: 
+  - `deptCode`: A String representing the department.
+  - `courseCode`: An Integer representing the course within the department.
+* Returns: A ResponseEntity object containing an HTTP 200 response with an appropriate message or the proper status code in tune with what has happened.
+
+#### PATCH /setEnrollmentCount
+* Attempts to set the enrollment count for a specific course.
+* Parameters: 
+  - `deptCode`: A String representing the department.
+  - `courseCode`: An Integer representing the course within the department.
+  - `count`: An Integer representing the number of students within the course.
+* Returns: A ResponseEntity object containing an HTTP 200 response with an appropriate message or the proper status code in tune with what has happened.
+
+#### PATCH /changeCourseTime
+* Endpoint for changing the time of a course. This method handles PATCH requests to change the time of a course identified by department code and course code. If the course exists, its time is updated to the provided time.
+* Parameters: 
+  - `deptCode`: A String representing the department containing the course.
+  - `courseCode`: An Integer representing the course to change the time for.
+  - `time`: A String representing the new time for the course.
+* Returns: A ResponseEntity with a success message if the operation is successful, or an error message if the course is not found.
+
+#### PATCH /changeCourseTeacher
+* Endpoint for changing the instructor of a course. This method handles PATCH requests to change the instructor of a course identified by department code and course code. If the course exists, its instructor is updated to the provided instructor.
+* Parameters: 
+  - `deptCode`: A String representing the department containing the course.
+  - `courseCode`: An Integer representing the course to change the instructor for.
+  - `teacher`: A String representing the new instructor for the course.
+* Returns: A ResponseEntity with a success message if the operation is successful, or an error message if the course is not found.
+
+#### PATCH /changeCourseLocation
+* Attempts to change the location of an already logged course.
+* Parameters: 
+  - `deptCode`: A String representing the department.
+  - `courseCode`: An Integer representing the course within the department.
+  - `location`: A String representing the location in which the course occurs.
+* Returns: A ResponseEntity object containing an HTTP 200 response with an appropriate message or the proper status code in tune with what has happened.
+
 
 ## Branch Coverage Reporting 
 I used JaCoCo to perform branch analysis and to get a better view into the branches that need to get covered within the codebase. Below is a screenshot of the most recent output. 
