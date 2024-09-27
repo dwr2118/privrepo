@@ -28,4 +28,4 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Run tests with Maven
-      run: cd IndividualProject/ && mvn spring-boot:run -Dspring-boot.run.arguments="setup"
+      run: cd IndividualProject/ && mvn test
