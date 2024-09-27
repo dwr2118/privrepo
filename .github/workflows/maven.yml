@@ -27,5 +27,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build and Run tests with Maven 
-      run: cd IndividualProject/ && mvn -B package --file pom.xml && mvn test
+    - name: Build with Maven
+      run: cd IndividualProject/ && mvn -B package --file pom.xml
+    - name: Run JUnit tests with Maven
+      run: mvn test
+    - name: Run PMD Static Analysis
+      run: mvn pmd:check || true
